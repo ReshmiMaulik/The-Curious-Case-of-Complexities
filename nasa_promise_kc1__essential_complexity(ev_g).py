@@ -84,11 +84,6 @@ plt.show()
 
 """GES algorithm"""
 
-# For Cyclomatic complexity
-df1 = df[['defects','lOCode', 'v(g)','d','i','e']]
-df1['defects'] = df1['defects'].astype(int)
-df1.rename(columns={'v(g)': 'v_g'}, inplace=True)
-
 # For Essential complexity
 df1 = df[['defects','lOCode', 'ev(g)','d','i','e']]
 df1['defects'] = df1['defects'].astype(int)
@@ -143,22 +138,6 @@ import graphviz
 !apt install libgraphviz-dev
 !pip install pygraphviz
 
-#Final graph for cyclomatic complexity
-# Define the causal graph using dowhy's graph notation
-# The graph is represented as a string in DOT format
-causal_graph = """digraph {
-    v_g -> e;
-    v_g -> i;
-    v_g -> defects;
-    v_g -> d;
-    lOCode -> d;
-    d -> defects;
-    v_g -> lOCode;
-    e -> lOCode;
-    i -> lOCode;
-    i -> defects;
-
-}"""
 
 # Final graph for Essential Complexity
 # Define the causal graph using dowhy's graph notation
@@ -198,16 +177,6 @@ causal_graph = """digraph {
 
 }"""
 
-
-# For Cyclomatic complexity
-model=CausalModel(
-        data = df1,
-        treatment='v_g',
-        outcome='defects',
-        graph=causal_graph,
-        )
-model.view_model(layout="dot")
-model.view_model(file_name="causal_model_CC.png") # Save the plot to a file
 
 # For Essential complexity
 model=CausalModel(
@@ -389,11 +358,6 @@ Estimated effect:-0.02285483839510266
 New effect:-0.0228354615951731
 p value:0.94
 
-Refute: Add a random common cause for cyclomatic complexity
-Estimated effect:0.02739818324879416
-New effect:0.02739747508616771
-p value:0.96
-"""
 
 refutel_common_cause=model.refute_estimate(identified_estimand,estimate,"data_subset_refuter")
 print(refutel_common_cause)
